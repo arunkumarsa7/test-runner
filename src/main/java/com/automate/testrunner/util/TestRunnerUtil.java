@@ -1,4 +1,4 @@
-package de.allianz.abs.adag.vertrag.kraft.test.allgemein;
+package com.automate.testrunner.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,35 +11,28 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.allianz.abs.adag.vertrag.kraft.test.ein.p.TestEinarbeitungG01AllgemeineVorlage_09_2013_Firmen_KH_TK_KU;
-
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class TestRunnerDistributedMode {
+import com.automate.testrunner.config.TestRunnerConfiguration;
 
-	/* specify the defect name as clustername 
-	 * ex: defect12456, iteration19;
-	 * 
-	 * */
+public class TestRunnerUtil {
 
-	private static final String clusterName = "Iteration171\\Arun";
-
-	private static final String REMOTE_LOCATION =
-			"\\\\vaimuc02\\PJSV\\C-P\\ABS-ANWENDUNGSSYSTEME\\3 Projekte\\ACIS India Multisourcing\\Automotive\\Shared\\TestRun";
+	@Autowired
+	TestRunnerConfiguration getTestIterationCluster;
 
 	@Test
 	public void testEinarbeitungAntrag1() {
 		try {
-
-			final File iterationFolder = new File(REMOTE_LOCATION, clusterName);
+			final File iterationFolder = new File(getTestIterationCluster.getTestIterationCluster());
 			iterationFolder.mkdirs();
 			final Counter counter = new Counter(iterationFolder);
 			final Logger lLogger = new Logger(iterationFolder);
 
-			final List<Class> junitTestSuites = new ArrayList<Class>();
+			final List<Class> junitTestSuites = new ArrayList<>();
 			junitTestSuites.add(TestKraftBoMengeServiceGesamtEinarbeitertestParallel12.class);
 			junitTestSuites.add(TestKraftBoMengeServiceGesamtEinarbeitertestParallel13.class);
 			junitTestSuites.add(TestKraftBoMengeServiceGesamtEinarbeitertestParallel14.class);
@@ -75,8 +68,7 @@ public class TestRunnerDistributedMode {
 			}
 			lLogger.close();
 
-		}
-		catch (final Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -116,8 +108,7 @@ class Logger {
 			final FileWriter remoteFileWriter = new FileWriter(remoteLogFile.getAbsoluteFile());
 			final BufferedWriter remoteWriter = new BufferedWriter(remoteFileWriter);
 			this.mWriters.add(remoteWriter);
-		}
-		catch (final Exception lException) {
+		} catch (final Exception lException) {
 			lException.printStackTrace();
 		}
 	}

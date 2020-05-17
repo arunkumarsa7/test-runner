@@ -2,7 +2,7 @@
 <!DOCTYPE xml>
 <configuration debug="true" scan="true" scanPeriod="30 seconds">
 	
-	<property resource="logger.properties"/>
+	<property resource="application.properties"/>
 	<property name="LOG_PATH" value="${logging.path}" />
 	<property name="LOG_ARCHIVE" value="${LOG_PATH}/${logging.archive.path}" />
 	
