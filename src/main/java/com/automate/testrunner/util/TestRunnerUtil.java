@@ -14,30 +14,34 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import com.automate.testrunner.TestRunnerApplication;
 import com.automate.testrunner.config.TestRunnerConfiguration;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = TestRunnerApplication.class)
 public class TestRunnerUtil {
 
 	@Autowired
 	TestRunnerConfiguration getTestIterationCluster;
 
+	@Autowired
+	TestSuitesLoader suitesLoader;
+
 	@Test
 	public void testEinarbeitungAntrag1() {
 		try {
-			final File iterationFolder = new File(getTestIterationCluster.getTestIterationCluster());
+			final File iterationFolder = new File(getTestIterationCluster.getTestRunnerLoggerLocation());
 			iterationFolder.mkdirs();
 			final Counter counter = new Counter(iterationFolder);
 			final Logger lLogger = new Logger(iterationFolder);
 
-			final List<Class> junitTestSuites = new ArrayList<>();
-			junitTestSuites.add(TestKraftBoMengeServiceGesamtEinarbeitertestParallel12.class);
-			junitTestSuites.add(TestKraftBoMengeServiceGesamtEinarbeitertestParallel13.class);
-			junitTestSuites.add(TestKraftBoMengeServiceGesamtEinarbeitertestParallel14.class);
-			junitTestSuites.add(TestKraftBoMengeServiceGesamtEinarbeitertestParallel15.class);
-			junitTestSuites.add(TestKraftKollektivRahmenEinarbeiterSuite.class);
+			final List<Class> junitTestSuites = suitesLoader.getTestSuitesToRun();
 
 			final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 			LocalDateTime now = null;
@@ -144,7 +148,6 @@ class Counter {
 	private final File counterFile;
 
 	public Counter(final File pIterationFolder) throws IOException {
-
 		this.counterFile = new File(pIterationFolder, "counter");
 		if (!this.counterFile.exists()) {
 			this.counterFile.createNewFile();
@@ -176,9 +179,9 @@ class Counter {
 	 * @throws IOException
 	 */
 	private void write(final int pI) throws IOException {
-		final FileOutputStream mFileOutputStream = new FileOutputStream(counterFile);
-		mFileOutputStream.write(pI);
-		mFileOutputStream.close();
+		try (final FileOutputStream mFileOutputStream = new FileOutputStream(counterFile)) {
+			mFileOutputStream.write(pI);
+		}
 	}
 
 	/**
@@ -186,10 +189,9 @@ class Counter {
 	 * @throws IOException
 	 */
 	private int read() throws IOException {
-		final FileInputStream lFileInputStream = new FileInputStream(counterFile);
-		final int b = lFileInputStream.read();
-		lFileInputStream.close();
-		return b;
+		try (final FileInputStream lFileInputStream = new FileInputStream(counterFile)) {
+			return lFileInputStream.read();
+		}
 	}
 
 }
